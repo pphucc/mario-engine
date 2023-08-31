@@ -3,7 +3,9 @@ package jade;
 import components.Sprite;
 import components.SpriteRenderer;
 import components.Spritesheet;
+import imgui.internal.ImGui;
 import org.joml.Vector2f;
+import org.joml.Vector4f;
 import util.AssetPool;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -25,10 +27,12 @@ public class LevelEditorScene extends Scene {
 
         sprites = AssetPool.getSpritesheet("assets/images/spritesheet.png");
 
-        obj1 = new GameObject("O1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)), 1);
-        obj1.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/images/blendImage1.png"))));
-        this.addGameObjectToScene(obj1);
+        obj1 = new GameObject("O1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)), 2);
+//        obj1.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/images/blendImage1.png"))));
+        obj1.addComponent(new SpriteRenderer(new Vector4f(1, 0, 0, 1)));
 
+        this.addGameObjectToScene(obj1);
+        this.activeGameobject = obj1;
         obj2 = new GameObject("O2", new Transform(new Vector2f(300, 100), new Vector2f(256, 256)), 3);
         obj2.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/images/blendImage2.png"))));
         this.addGameObjectToScene(obj2);
@@ -62,5 +66,14 @@ public class LevelEditorScene extends Scene {
             go.update(dt);
         }
         this.renderer.render();
+    }
+
+    @Override
+    public void imgui(){
+        ImGui.begin("Test window");
+        ImGui.text("Random text");
+        ImGui.button("Random button");
+        ImGui.end();
+
     }
 }
