@@ -11,6 +11,7 @@ import imgui.gl3.ImGuiImplGl3;
 
 import imgui.glfw.ImGuiImplGlfw;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import scenes.Scene;
 
 import java.io.File;
 
@@ -96,6 +97,9 @@ public class ImGuiLayer {
             io.setKeyAlt(io.getKeysDown(GLFW_KEY_LEFT_ALT) || io.getKeysDown(GLFW_KEY_RIGHT_ALT));
             io.setKeySuper(io.getKeysDown(GLFW_KEY_LEFT_SUPER) || io.getKeysDown(GLFW_KEY_RIGHT_SUPER));
 
+            if(!io.getWantCaptureKeyboard()){
+                KeyListener.keyCallback(w, key, scancode, action, mods);
+            }
         });
 
 
@@ -119,6 +123,10 @@ public class ImGuiLayer {
 
             if (!io.getWantCaptureMouse() && mouseDown[1]) {
                 ImGui.setWindowFocus(null);
+            }
+
+            if(!io.getWantCaptureMouse()){
+                MouseListener.mouseButtonCallback(glfwWindow, button, action, mods);
             }
         });
 
@@ -163,7 +171,7 @@ public class ImGuiLayer {
             fontConfig.setPixelSnapH(true);
 
 
-            fontAtlas.addFontFromFileTTF("C:/Windows/Fonts/segoeui.ttf", 24, fontConfig);
+            fontAtlas.addFontFromFileTTF("C:/Windows/Fonts/segoeui.ttf", 20, fontConfig);
             fontConfig.destroy(); // After all fonts were added we don't need this config more
         } else if (new File("C:/Windows/Fonts/Cour.ttf").isFile()) {
             // Fallback font
@@ -176,7 +184,7 @@ public class ImGuiLayer {
 
             // Fonts merge example
             fontConfig.setPixelSnapH(true);
-            fontAtlas.addFontFromFileTTF("C:/Windows/Fonts/Cour.ttf", 24, fontConfig);
+            fontAtlas.addFontFromFileTTF("C:/Windows/Fonts/Cour.ttf", 20, fontConfig);
             fontConfig.destroy(); // After all fonts were added we don't need this config more
         }
 

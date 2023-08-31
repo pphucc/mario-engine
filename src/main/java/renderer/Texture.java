@@ -69,4 +69,8 @@ public class Texture {
     public int getHeight() {
         return this.height;
     }
+
+    public int getTexId() {
+        return this.texID;
+    }
 }

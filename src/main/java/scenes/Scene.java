@@ -1,8 +1,13 @@
-package jade;
+package scenes;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import components.Component;
+import components.ComponentDeserializer;
 import imgui.ImGui;
+import jade.Camera;
+import jade.GameObject;
+import jade.GameObjectDeserializer;
 import renderer.Renderer;
 
 import java.io.FileWriter;
@@ -14,7 +19,7 @@ import java.util.List;
 
 public abstract class Scene {
     protected Renderer renderer = new Renderer();
-    protected Camera camera;
+    public Camera camera;
     private boolean isRunning = false;
     protected List<GameObject> gameObjects = new ArrayList<>();
     protected GameObject activeGameobject = null;
@@ -73,7 +78,7 @@ public abstract class Scene {
                 .create();
 
         try{
-            FileWriter writer = new FileWriter("level.txt");
+            FileWriter writer = new FileWriter("level.txt", false);
             writer.write(gson.toJson(this.gameObjects));
             writer.close();
         }catch (IOException e){
@@ -97,11 +102,31 @@ public abstract class Scene {
         }
 
         if(!inFile.equals("")){
+            int maxGoId = -1;
+            int maxCompId = -1;
+
             GameObject[] objs = gson.fromJson(inFile, GameObject[].class);
             for(int i = 0; i < objs.length; i++){
                 addGameObjectToScene(objs[i]);
-                this.levelLoaded = true;
+
+                for(Component c : objs[i].getAllComponents()){
+                    if(c.getuId() > maxCompId){
+                        maxCompId = c.getuId();
+                    }
+                }
+
+                if(objs[i].getuId() > maxGoId){
+                    maxGoId = objs[i].getuId();
+                }
             }
+            maxGoId++;
+            maxCompId++;
+            System.out.println(maxGoId);
+            System.out.println(maxCompId);
+            GameObject.init(maxGoId);
+            Component.init(maxCompId);
+
+            this.levelLoaded = true;
         }
     }
 }
