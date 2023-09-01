@@ -1,14 +1,14 @@
 package scenes;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import components.*;
 import imgui.ImGui;
 import imgui.ImVec2;
 import jade.*;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
+import org.joml.Vector3f;
+import renderer.DebugDraw;
 import util.AssetPool;
+
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -17,7 +17,8 @@ public class LevelEditorScene extends Scene {
     private GameObject obj1, obj2;
     private Spritesheet sprites;
     SpriteRenderer obj1Sprite;
-    MouseControls mouseControls = new MouseControls();
+
+    GameObject levelEditorStuff = new GameObject("LevelEditor", new Transform(new Vector2f()), 0);
 
 
     public LevelEditorScene() {
@@ -26,45 +27,48 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void init() {
+        levelEditorStuff.addComponent(new MouseControls());
+        levelEditorStuff.addComponent(new GridLines());
+
         loadResources();
         this.camera = new Camera(new Vector2f(-250, 0));
         sprites = AssetPool.getSpritesheet("assets/images/spritesheets/decorationsAndBlocks.png");
 
+
         if (levelLoaded) {
             this.activeGameobject = gameObjects.get(0);
-            this.activeGameobject.addComponent(new Rigidbody());
             return;
         }
 
 
-        obj1 = new GameObject("O1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)), 2);
-//        obj1.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/images/blendImage1.png"))));
-        obj1Sprite = new SpriteRenderer();
-        obj1Sprite.setColor(new Vector4f(1, 0, 0, 1));
-        obj1.addComponent(obj1Sprite);
-        obj1.addComponent(new Rigidbody());
-        this.addGameObjectToScene(obj1);
-        this.activeGameobject = obj1;
+//        obj1 = new GameObject("O1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)), 2);
+////        obj1.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/images/blendImage1.png"))));
+//        obj1Sprite = new SpriteRenderer();
+//        obj1Sprite.setColor(new Vector4f(1, 0, 0, 1));
+//        obj1.addComponent(obj1Sprite);
+//        obj1.addComponent(new Rigidbody());
+//        this.addGameObjectToScene(obj1);
+//        this.activeGameobject = obj1;
+//
+//
+//        obj2 = new GameObject("O2", new Transform(new Vector2f(300, 100), new Vector2f(256, 256)), 3);
+//        SpriteRenderer obj2SpriteRenderer = new SpriteRenderer();
+//        Sprite obj2Sprite = new Sprite();
+//        obj2Sprite.setTexture(AssetPool.getTexture("assets/images/blendImage2.png"));
+//        obj2SpriteRenderer.setSprite(obj2Sprite);
+//        obj2.addComponent(obj2SpriteRenderer);
+//        this.addGameObjectToScene(obj2);
 
 
-        obj2 = new GameObject("O2", new Transform(new Vector2f(300, 100), new Vector2f(256, 256)), 3);
-        SpriteRenderer obj2SpriteRenderer = new SpriteRenderer();
-        Sprite obj2Sprite = new Sprite();
-        obj2Sprite.setTexture(AssetPool.getTexture("assets/images/blendImage2.png"));
-        obj2SpriteRenderer.setSprite(obj2Sprite);
-        obj2.addComponent(obj2SpriteRenderer);
-        this.addGameObjectToScene(obj2);
-
-
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(Component.class, new ComponentDeserializer())
-                .registerTypeAdapter(GameObject.class, new GameObjectDeserializer())
-                .create();
-        String serialized = gson.toJson(obj1);
-        System.out.println(serialized);
-        GameObject obj = gson.fromJson(serialized, GameObject.class);
-        System.out.println(obj);
+//        Gson gson = new GsonBuilder()
+//                .setPrettyPrinting()
+//                .registerTypeAdapter(Component.class, new ComponentDeserializer())
+//                .registerTypeAdapter(GameObject.class, new GameObjectDeserializer())
+//                .create();
+//        String serialized = gson.toJson(obj1);
+//        System.out.println(serialized);
+//        GameObject obj = gson.fromJson(serialized, GameObject.class);
+//        System.out.println(obj);
     }
 
     private void loadResources() {
@@ -76,11 +80,18 @@ public class LevelEditorScene extends Scene {
 
     }
 
+    float angle = 0.0f;
+    float x =0.0f, y =0.0f;
     @Override
     public void update(float dt) {
 
-        mouseControls.update(dt);
+        levelEditorStuff.update(dt);
+        DebugDraw.addBox2D(new Vector2f(200, 200), new Vector2f(64, 32), angle, new Vector3f(0, 1, 0), 1);
+        angle += dt;
 
+        DebugDraw.addCircle(new Vector2f(x, y), 50.0f, new Vector3f(0, 1, 0), 1);
+        x += 50f * dt;
+        y += 50f * dt;
 
         if (KeyListener.isKeyPressed(GLFW_KEY_UP)) {
             camera.position.y += 1;
@@ -125,12 +136,12 @@ public class LevelEditorScene extends Scene {
 
             ImGui.pushID(i);
             if (ImGui.imageButton(id, spriteWidth, spriteHeight,
-                    texCoords[0].x, texCoords[0].y,
-                    texCoords[2].x, texCoords[2].y)) {
+                    texCoords[2].x, texCoords[0].y,
+                    texCoords[0].x, texCoords[2].y)) {
                 // pick up that sprite
-                GameObject object = Prefabs.generateSpriteObject(sprite, spriteWidth, spriteHeight);
+                GameObject object = Prefabs.generateSpriteObject(sprite, 32, 32);
                 // Attach this to the mouse cursor
-                mouseControls.pickupObject(object);
+                levelEditorStuff.getComponent(MouseControls.class).pickupObject(object);
             }
             ImGui.popID();
 
@@ -140,16 +151,12 @@ public class LevelEditorScene extends Scene {
             float lastBunttonX2 = lastButtonPos.x;
             float nextButtonX2 = lastBunttonX2 + itemSpacing.x + spriteWidth;
 
-            if(i + 1 < sprites.size() && nextButtonX2 < windowX2){
+            if (i + 1 < sprites.size() && nextButtonX2 < windowX2) {
                 ImGui.sameLine();
             }
 //            else {
 //                ImGui.newLine();
 //            }
-
-
-
-
 
         }
 

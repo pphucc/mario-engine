@@ -26,7 +26,7 @@ public class ImGuiLayer {
     // Mouse cursors provided by GLFW
     private final long[] mouseCursors = new long[ImGuiMouseCursor.COUNT];
 
-    public ImGuiLayer(long glfwWindow){
+    public ImGuiLayer(long glfwWindow) {
         this.glfwWindow = glfwWindow;
     }
 
@@ -97,7 +97,7 @@ public class ImGuiLayer {
             io.setKeyAlt(io.getKeysDown(GLFW_KEY_LEFT_ALT) || io.getKeysDown(GLFW_KEY_RIGHT_ALT));
             io.setKeySuper(io.getKeysDown(GLFW_KEY_LEFT_SUPER) || io.getKeysDown(GLFW_KEY_RIGHT_SUPER));
 
-            if(!io.getWantCaptureKeyboard()){
+            if (!io.getWantCaptureKeyboard()) {
                 KeyListener.keyCallback(w, key, scancode, action, mods);
             }
         });
@@ -125,7 +125,7 @@ public class ImGuiLayer {
                 ImGui.setWindowFocus(null);
             }
 
-            if(!io.getWantCaptureMouse()){
+            if (!io.getWantCaptureMouse()) {
                 MouseListener.mouseButtonCallback(glfwWindow, button, action, mods);
             }
         });
@@ -135,21 +135,20 @@ public class ImGuiLayer {
             io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
         });
 
-        io.setSetClipboardTextFn(new ImStrConsumer(){
+        io.setSetClipboardTextFn(new ImStrConsumer() {
             @Override
-            public void accept(final String s){
+            public void accept(final String s) {
                 glfwSetClipboardString(glfwWindow, s);
             }
         });
-        io.setGetClipboardTextFn(new ImStrSupplier(){
+        io.setGetClipboardTextFn(new ImStrSupplier() {
             @Override
-            public String get(){
+            public String get() {
                 final String clipboardString = glfwGetClipboardString(glfwWindow);
 
-                if(clipboardString != null){
+                if (clipboardString != null) {
                     return clipboardString;
-                }
-                else {
+                } else {
                     return "";
                 }
             }
@@ -189,14 +188,13 @@ public class ImGuiLayer {
         }
 
 
-
         imGuiGlfw.init(glfwWindow, false);
 
         imGuiGl3.init("#version 330 core");
     }
 
 
-    public void update(float dt, Scene currentScene){
+    public void update(float dt, Scene currentScene) {
         startFrame(dt);
 
         ImGui.newFrame();
@@ -207,7 +205,7 @@ public class ImGuiLayer {
         endFrame();
     }
 
-    public void startFrame(float dt){
+    public void startFrame(float dt) {
         imGuiGlfw.newFrame();
 
         //Get window properties and mouse position
@@ -234,11 +232,11 @@ public class ImGuiLayer {
 
     }
 
-    public void endFrame(){
-    imGuiGl3.renderDrawData(ImGui.getDrawData());
+    public void endFrame() {
+        imGuiGl3.renderDrawData(ImGui.getDrawData());
     }
 
-    public void destroyImGui(){
+    public void destroyImGui() {
         imGuiGl3.dispose();
         ImGui.destroyContext();
     }

@@ -81,7 +81,7 @@ public class MouseListener {
         return currentX;
     }
 
-    public static float getGetOrthoY() {
+    public static float getOrthoY() {
         float currentY = Window.getHeight() - getY();
         currentY = (currentY / (float) Window.getHeight()) * 2 - 1;
         Vector4f tmp = new Vector4f(0, currentY, 0, 1);
