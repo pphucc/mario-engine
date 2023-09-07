@@ -46,7 +46,7 @@ public class DebugDraw {
         glEnableVertexAttribArray(1);
 
         // TODO: SET LINE WIDTH
-        glLineWidth(1.0f);
+        glLineWidth(2.0f);
 
     }
 
@@ -185,7 +185,7 @@ public class DebugDraw {
     }
 
     public static void addCircle(Vector2f center, float radius, Vector3f color, int lifetime) {
-        int segments = 50; // What make circle "CIRCLE"!
+        int segments = 50; //The number of sides of the polygon - What make circle "CIRCLE"!
         Vector2f[] vertices = new Vector2f[segments];
         // Calculate vertices for the circle
         float angleIncrement = 2 * (float) Math.PI / segments;

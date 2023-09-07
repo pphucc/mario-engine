@@ -23,7 +23,7 @@ public class MouseControls extends Component {
     public void update(float dt) {
         if (holdingObject != null) {
             holdingObject.transform.position.x = MouseListener.getOrthoX();
-            holdingObject.transform.position.y = MouseListener.getOrthoY() + 16;
+            holdingObject.transform.position.y = MouseListener.getOrthoY();
 
             holdingObject.transform.position.x = (int)(holdingObject.transform.position.x / Settings.GRID_WIDTH) * Settings.GRID_WIDTH;
             holdingObject.transform.position.y = (int)(holdingObject.transform.position.y / Settings.GRID_HEIGHT) * Settings.GRID_HEIGHT;

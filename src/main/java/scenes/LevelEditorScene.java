@@ -6,6 +6,7 @@ import imgui.ImVec2;
 import jade.*;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import renderer.DebugDraw;
 import util.AssetPool;
 
@@ -35,12 +36,6 @@ public class LevelEditorScene extends Scene {
         sprites = AssetPool.getSpritesheet("assets/images/spritesheets/decorationsAndBlocks.png");
 
 
-        if (levelLoaded) {
-            this.activeGameobject = gameObjects.get(0);
-            return;
-        }
-
-
 //        obj1 = new GameObject("O1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)), 2);
 ////        obj1.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/images/blendImage1.png"))));
 //        obj1Sprite = new SpriteRenderer();
@@ -48,7 +43,6 @@ public class LevelEditorScene extends Scene {
 //        obj1.addComponent(obj1Sprite);
 //        obj1.addComponent(new Rigidbody());
 //        this.addGameObjectToScene(obj1);
-//        this.activeGameobject = obj1;
 //
 //
 //        obj2 = new GameObject("O2", new Transform(new Vector2f(300, 100), new Vector2f(256, 256)), 3);
@@ -73,25 +67,37 @@ public class LevelEditorScene extends Scene {
 
     private void loadResources() {
         AssetPool.getShader("assets/shaders/default.glsl");
+
+        // TODO: FIX TEXTURE SAVE SYSTEM TO USE PATH INSTEAD OF ID
         AssetPool.addSpritesheet("assets/images/spritesheets/decorationsAndBlocks.png",
                 new Spritesheet(AssetPool.getTexture("assets/images/spritesheets/decorationsAndBlocks.png"),
                         16, 16, 81, 0));
         AssetPool.getTexture("assets/images/blendImage2.png");
 
+        for (GameObject g : gameObjects) {
+            if (g.getComponent(SpriteRenderer.class) != null) {
+                SpriteRenderer spr = g.getComponent(SpriteRenderer.class);
+                if (spr.getTexture() != null) {
+                    spr.setTexture(AssetPool.getTexture(spr.getTexture().getFilepath()));
+                }
+            }
+        }
+
     }
 
     float angle = 0.0f;
-    float x =0.0f, y =0.0f;
+    float x = 0.0f, y = 0.0f;
+
     @Override
     public void update(float dt) {
-
         levelEditorStuff.update(dt);
-        DebugDraw.addBox2D(new Vector2f(200, 200), new Vector2f(64, 32), angle, new Vector3f(0, 1, 0), 1);
-        angle += dt;
 
-        DebugDraw.addCircle(new Vector2f(x, y), 50.0f, new Vector3f(0, 1, 0), 1);
-        x += 50f * dt;
-        y += 50f * dt;
+//        DebugDraw.addBox2D(new Vector2f(200, 200), new Vector2f(64, 32), angle, new Vector3f(0, 1, 0), 1);
+//        angle += dt;
+//
+//        DebugDraw.addCircle(new Vector2f(x, y), 50.0f, new Vector3f(0, 1, 0), 1);
+//        x += 50f * dt;
+//        y += 50f * dt;
 
         if (KeyListener.isKeyPressed(GLFW_KEY_UP)) {
             camera.position.y += 1;
@@ -105,12 +111,17 @@ public class LevelEditorScene extends Scene {
         if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT)) {
             camera.position.x += 1;
         }
+
+
         for (GameObject go : this.gameObjects) {
             go.update(dt);
         }
+
+    }
+
+    @Override
+    public void render() {
         this.renderer.render();
-
-
     }
 
     @Override
@@ -154,13 +165,8 @@ public class LevelEditorScene extends Scene {
             if (i + 1 < sprites.size() && nextButtonX2 < windowX2) {
                 ImGui.sameLine();
             }
-//            else {
-//                ImGui.newLine();
-//            }
 
         }
-
-
         ImGui.end();
 
     }
