@@ -39,7 +39,7 @@ public class GameViewWindow {
 
     public boolean getWantCaptureMouse() {
         return MouseListener.getX() >= leftX && MouseListener.getX() <= rightX
-                && MouseListener.getY() >= bottomY && MouseListener.getY() <= topY;
+                && MouseListener.getY() >= topY && MouseListener.getY() <= bottomY;
     }
 
     private ImVec2 getLargestSizeForViewport() {

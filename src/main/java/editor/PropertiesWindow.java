@@ -28,13 +28,16 @@ public class PropertiesWindow {
 
     public void imgui() {
         if (activeGameobject != null) {
-            currentActive = activeGameobject;
-        }
-        if(currentActive != null){
             ImGui.begin("Properties");
-            currentActive.imgui();
+            activeGameobject.imgui();
             ImGui.end();
+//            currentActive = activeGameobject;
         }
+//        if(currentActive != null){
+//            ImGui.begin("Properties");
+//            currentActive.imgui();
+//            ImGui.end();
+//        }
 
     }
 
