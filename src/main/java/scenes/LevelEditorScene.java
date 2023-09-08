@@ -5,9 +5,6 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import jade.*;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
-import renderer.DebugDraw;
 import util.AssetPool;
 
 
@@ -28,13 +25,18 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void init() {
+        loadResources();
+        sprites = AssetPool.getSpritesheet("assets/images/spritesheets/decorationsAndBlocks.png");
+        Spritesheet gizmos = AssetPool.getSpritesheet("assets/images/gizmos.png");
+        this.camera = new Camera(new Vector2f(-250, 0));
+
         levelEditorStuff.addComponent(new MouseControls());
         levelEditorStuff.addComponent(new GridLines());
+        levelEditorStuff.addComponent(new EditorCamera(this.camera));
+        levelEditorStuff.addComponent(new TranslateGizmo(gizmos.getSprite(1),
+                Window.getImGuiLayer().getPropertiesWindow()));
 
-        loadResources();
-        this.camera = new Camera(new Vector2f(-250, 0));
-        sprites = AssetPool.getSpritesheet("assets/images/spritesheets/decorationsAndBlocks.png");
-
+        levelEditorStuff.start();
 
 //        obj1 = new GameObject("O1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)), 2);
 ////        obj1.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/images/blendImage1.png"))));
@@ -72,7 +74,12 @@ public class LevelEditorScene extends Scene {
         AssetPool.addSpritesheet("assets/images/spritesheets/decorationsAndBlocks.png",
                 new Spritesheet(AssetPool.getTexture("assets/images/spritesheets/decorationsAndBlocks.png"),
                         16, 16, 81, 0));
-        AssetPool.getTexture("assets/images/blendImage2.png");
+
+        AssetPool.addSpritesheet("assets/images/gizmos.png"
+                , new Spritesheet(AssetPool.getTexture("assets/images/gizmos.png")
+                , 24, 48, 2, 0));
+
+       AssetPool.getTexture("assets/images/blendImage2.png");
 
         for (GameObject g : gameObjects) {
             if (g.getComponent(SpriteRenderer.class) != null) {
@@ -91,7 +98,7 @@ public class LevelEditorScene extends Scene {
     @Override
     public void update(float dt) {
         levelEditorStuff.update(dt);
-
+        this.camera.adjustProjection();
 //        DebugDraw.addBox2D(new Vector2f(200, 200), new Vector2f(64, 32), angle, new Vector3f(0, 1, 0), 1);
 //        angle += dt;
 //
@@ -126,6 +133,10 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void imgui() {
+        ImGui.begin("Level Editor Stuff");
+        levelEditorStuff.imgui();
+        ImGui.end();
+
         ImGui.begin("Test window");
 
         ImVec2 windowPos = new ImVec2();
