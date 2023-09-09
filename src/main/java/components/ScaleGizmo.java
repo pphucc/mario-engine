@@ -3,10 +3,10 @@ package components;
 import editor.PropertiesWindow;
 import jade.MouseListener;
 
-public class TranslateGizmo extends Gizmo {
+public class ScaleGizmo extends Gizmo {
 
-    public TranslateGizmo(Sprite arrowSprite, PropertiesWindow propertiesWindow) {
-        super(arrowSprite, propertiesWindow);
+    public ScaleGizmo(Sprite scaleSprite, PropertiesWindow propertiesWindow) {
+        super(scaleSprite, propertiesWindow);
     }
 
     @Override
@@ -19,10 +19,9 @@ public class TranslateGizmo extends Gizmo {
 
         if(activeGameObject != null){
             if(xAxisActive && !yAxisActive){
-
-                activeGameObject.transform.position.x -= MouseListener.getWorldDx();
+                activeGameObject.transform.scale.x -= MouseListener.getWorldDx();
             } else if (yAxisActive) {
-                activeGameObject.transform.position.y -= MouseListener.getWorldDy();
+                activeGameObject.transform.scale.y -= MouseListener.getWorldDy();
             }
         }
         super.update(dt);

@@ -9,14 +9,23 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class EditorCamera extends Component {
 
-    private float dragDebounce = 0.1f;
+    private float dragDebounce = 0.032f;
 
     private Camera levelEditorCamera;
     private Vector2f clickOrigin;
     private boolean reset = false;
 
     private float lerpTime = 0.0f;
-    private float dragSensitivity = 30.0f;
+
+    public float getDragSensitivity() {
+        return dragSensitivity;
+    }
+
+    public void setDragSensitivity(float dragSensitivity) {
+        this.dragSensitivity = dragSensitivity;
+    }
+
+    private float dragSensitivity = 10.0f;
     private float scrollSensitivity = 0.1f;
 
     public EditorCamera(Camera levelEditorCamera) {
@@ -27,6 +36,16 @@ public class EditorCamera extends Component {
 
     @Override
     public void update(float dt) {
+
+
+        // Make screen stay
+        if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+            setDragSensitivity(0);
+        } else {
+            setDragSensitivity(10.0f);
+        }
+
+
         if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) && dragDebounce > 0) {
             this.clickOrigin = new Vector2f(MouseListener.getOrthoX(), MouseListener.getOrthoY());
             dragDebounce -= dt;
@@ -38,7 +57,7 @@ public class EditorCamera extends Component {
             this.clickOrigin.lerp(mousePos, dt);
         }
         if (dragDebounce <= 0.0f && !MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            dragDebounce = 0.1f;
+            dragDebounce = 0.032f;
         }
 
         if (MouseListener.getScrollY() != 0.0f) {
