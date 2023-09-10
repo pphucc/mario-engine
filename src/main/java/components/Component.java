@@ -1,5 +1,6 @@
 package components;
 
+import editor.JImGui;
 import imgui.ImGui;
 import jade.GameObject;
 import org.joml.Vector2f;
@@ -43,16 +44,20 @@ public abstract class Component {
 
                 if (type == int.class) {
                     int val = (int) value;
-                    int[] imInt = {val};
-                    if (ImGui.dragInt(name + ": ", imInt)) {
-                        field.set(this, imInt[0]);
-                    }
+                    field.set(this, JImGui.dragInt(name, val));
+
+//                    int[] imInt = {val};
+//                    if (ImGui.dragInt(name + ": ", imInt)) {
+//                        field.set(this, imInt[0]);
+//                    }
                 } else if (type == float.class) {
                     float val = (float) value;
-                    float[] imFloat = {val};
-                    if (ImGui.dragFloat(name + ": ", imFloat)) {
-                        field.set(this, imFloat[0]);
-                    }
+                    field.set(this, JImGui.dragFloat(name, val));
+
+//                    float[] imFloat = {val};
+//                    if (ImGui.dragFloat(name + ": ", imFloat)) {
+//                        field.set(this, imFloat[0]);
+//                    }
                 } else if (type == boolean.class) {
                     boolean val = (boolean) value;
                     boolean[] imBool = {val};
@@ -61,10 +66,8 @@ public abstract class Component {
                     }
                 } else if (type == Vector2f.class) {
                     Vector2f val = (Vector2f) value;
-                    float[] imVec = {val.x, val.y};
-                    if (ImGui.dragFloat2(name + ": ", imVec)) {
-                        val.set(imVec[0], imVec[1]);
-                    }
+                    JImGui.drawVec2Control(name, val);
+//
                 } else if (type == Vector3f.class) {
                     Vector3f val = (Vector3f) value;
                     float[] imVec = {val.x, val.y, val.z};
@@ -94,11 +97,11 @@ public abstract class Component {
         }
     }
 
-    public int getuId(){
+    public int getuId() {
         return this.uId;
     }
 
-    public static void init(int maxId){
+    public static void init(int maxId) {
         ID_COUNTER = maxId;
     }
 }

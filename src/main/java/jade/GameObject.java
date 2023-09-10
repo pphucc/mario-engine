@@ -1,6 +1,7 @@
 package jade;
 
 import components.Component;
+import imgui.ImGui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,72 +12,66 @@ public class GameObject {
     private int uId = -1;
     private String name;
     private List<Component> components;
-    public Transform transform;
-    private int zIndex;
+    public transient Transform transform;
     private boolean doSerialization = true;
 
 
-    public GameObject(String name, Transform transform, int zIndex){
+    public GameObject(String name) {
         this.name = name;
-        this.zIndex = zIndex;
         this.components = new ArrayList<>();
-        this.transform = transform;
         this.uId = ID_COUNTER++;
     }
 
-    public <T extends Component> T getComponent(Class<T> componentClass){
-        for(Component c:components){
-            if(componentClass.isAssignableFrom(c.getClass())){
+    public <T extends Component> T getComponent(Class<T> componentClass) {
+        for (Component c : components) {
+            if (componentClass.isAssignableFrom(c.getClass())) {
                 try {
                     return componentClass.cast(c);
-                } catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     e.printStackTrace();
-                    assert false: "Error: Casting component";
+                    assert false : "Error: Casting component";
                 }
             }
         }
         return null;
     }
 
-    public <T extends Component> void removeComponent(Class<T> componentClass){
-        for(int i = 0; i < components.size(); i++){
+    public <T extends Component> void removeComponent(Class<T> componentClass) {
+        for (int i = 0; i < components.size(); i++) {
             Component c = components.get(i);
-            if(componentClass.isAssignableFrom(components.getClass())){
+            if (componentClass.isAssignableFrom(components.getClass())) {
                 components.remove(i);
                 return;
             }
         }
     }
 
-    public void addComponent(Component c){
+    public void addComponent(Component c) {
         c.generateId();
         this.components.add(c);
         c.gameObject = this;
     }
 
-    public void update(float dt){
-        for(int i = 0; i< components.size(); i++){
+    public void update(float dt) {
+        for (int i = 0; i < components.size(); i++) {
             components.get(i).update(dt);
         }
     }
 
-    public void start(){
-        for(int i = 0; i < components.size(); i++){
+    public void start() {
+        for (int i = 0; i < components.size(); i++) {
             components.get(i).start();
         }
     }
 
-    public void imgui(){
-        for(Component c : components){
-            c.imgui();
+    public void imgui() {
+        for (Component c : components) {
+            if (ImGui.collapsingHeader(c.getClass().getSimpleName()))
+                c.imgui();
         }
     }
 
-    public int zIndex(){
-        return this.zIndex;
-    }
-
-    public static void init(int maxId){
+    public static void init(int maxId) {
         ID_COUNTER = maxId;
     }
 
@@ -84,15 +79,15 @@ public class GameObject {
         return this.uId;
     }
 
-    public List<Component> getAllComponents(){
-         return this.components;
+    public List<Component> getAllComponents() {
+        return this.components;
     }
 
-    public void setNoSerialize(){
+    public void setNoSerialize() {
         this.doSerialization = false;
     }
 
-    public boolean doSerialization(){
+    public boolean doSerialization() {
         return this.doSerialization;
     }
 }

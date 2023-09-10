@@ -1,9 +1,13 @@
 package editor;
 
 import components.NonPickable;
+import components.Rigidbody;
 import imgui.ImGui;
 import jade.GameObject;
 import jade.MouseListener;
+import physics2d.components.Box2DCollider;
+import physics2d.components.CircleCollider;
+import physics2d.components.Rigidbody2D;
 import renderer.PickingTexture;
 import scenes.Scene;
 
@@ -27,7 +31,7 @@ public class PropertiesWindow {
             int gameObjectId = pickingTexture.readPixel(x, y);
 
             GameObject pickedObj = currentScene.getGameObject(gameObjectId);
-            if(pickedObj != null && pickedObj.getComponent(NonPickable.class) == null){
+            if (pickedObj != null && pickedObj.getComponent(NonPickable.class) == null) {
                 activeGameobject = pickedObj;
             } else if (pickedObj == null && !MouseListener.isDragging()) {
                 activeGameobject = null;
@@ -40,15 +44,40 @@ public class PropertiesWindow {
     public void imgui() {
         if (activeGameobject != null) {
             ImGui.begin("Properties");
+
+            if (ImGui.beginPopupContextWindow("ComponentAdder")) {
+                if (ImGui.menuItem("Add Rigidbody")) {
+                    if (activeGameobject.getComponent(Rigidbody2D.class) == null) {
+                        activeGameobject.addComponent(new Rigidbody2D());
+                    }
+                }
+
+                if (ImGui.menuItem("Add Box Collider")) {
+                    if (activeGameobject.getComponent(Box2DCollider.class) == null &&
+                        activeGameobject.getComponent(CircleCollider.class) == null) {
+                        activeGameobject.addComponent(new Box2DCollider());
+                    }
+                }
+
+                if (ImGui.menuItem("Add Circle Collider")) {
+                    if (activeGameobject.getComponent(CircleCollider.class) == null &&
+                        activeGameobject.getComponent(Box2DCollider.class) == null) {
+                        activeGameobject.addComponent(new CircleCollider());
+                    }
+                }
+
+                ImGui.endPopup();
+            }
+
+
             activeGameobject.imgui();
             ImGui.end();
         }
     }
 
-    public GameObject getActiveGameobject(){
+    public GameObject getActiveGameobject() {
         return this.activeGameobject;
     }
-
 
 
 }
