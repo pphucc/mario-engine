@@ -24,6 +24,9 @@ public abstract class Component {
     public void update(float dt) {
 
     }
+    public void editorUpdate(float dt){
+
+    }
 
     public void imgui() {
         try {
@@ -97,7 +100,11 @@ public abstract class Component {
         }
     }
 
-    public int getuId() {
+    public void destroy(){
+
+    }
+
+    public int getUId() {
         return this.uId;
     }
 

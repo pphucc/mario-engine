@@ -48,7 +48,15 @@ public class SpriteRenderer extends Component {
             this.gameObject.transform.copy(this.lastTransform);
             isDirty = true;
         }
+    }
 
+
+    @Override
+    public void editorUpdate(float dt) {
+        if (!this.lastTransform.equals(this.gameObject.transform)) {
+            this.gameObject.transform.copy(this.lastTransform);
+            isDirty = true;
+        }
     }
 
     public Vector4f getColor() {
@@ -75,6 +83,9 @@ public class SpriteRenderer extends Component {
         }
     }
 
+    public void setDirty(){
+        this.isDirty = true;
+    }
     public boolean isDirty() {
         return this.isDirty;
     }
