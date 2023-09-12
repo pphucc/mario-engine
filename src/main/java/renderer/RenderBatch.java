@@ -6,7 +6,6 @@ import jade.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-import util.AssetPool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,12 +47,13 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private int maxBatchSize;
     private int zIndex;
 
+    private Renderer renderer;
 
-    public RenderBatch(int maxBatchSize, int zIndex) {
+    public RenderBatch(int maxBatchSize, int zIndex, Renderer renderer) {
         this.zIndex = zIndex;
         this.sprites = new SpriteRenderer[maxBatchSize];
         this.maxBatchSize = maxBatchSize;
-
+        this.renderer = renderer;
         // 4 vertices quads
         vertices = new float[maxBatchSize * 4 * VERTEX_SIZE];
 
@@ -127,6 +127,13 @@ public class RenderBatch implements Comparable<RenderBatch> {
                 spr.setClean();
                 rebufferData = true;
             }
+            // TODO : get better solution for this
+            if (spr.gameObject.transform.zIndex != this.zIndex) {
+                destroyIfExists(spr.gameObject);
+                renderer.add(spr.gameObject);
+
+                i--;
+            }
         }
         if (rebufferData) {
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
@@ -161,16 +168,36 @@ public class RenderBatch implements Comparable<RenderBatch> {
         shader.detach();
     }
 
-    public boolean destroyIfExists(GameObject go){
+//    public boolean destroyIfExists(GameObject go) {
+//        SpriteRenderer sprite = go.getComponent(SpriteRenderer.class);
+//        for (int i = 0; i < numSprites; i++) {
+//            if (sprites[i] == sprite) {
+//                // [1, 2, 3, 4, 5, 6, ... ]
+//                // [1, 2, 3, 5, 6, ... ]
+//                for (int j = i; j < numSprites; j++) {
+//                    sprites[j] = sprites[j + 1];
+//                    sprites[j].setDirty();
+//                }
+//                numSprites--;
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+    public boolean destroyIfExists(GameObject go) {
         SpriteRenderer sprite = go.getComponent(SpriteRenderer.class);
-        for(int i = 0; i < numSprites;i++){
-            if(sprites[i] == sprite){
-                // [1, 2, 3, 4, 5, 6, ... ]
-                // [1, 2, 3, 5, 6, ... ]
-                for(int j = i; j < numSprites; j++){
-                    sprites[j] = sprites[j+1];
-                    sprites[j].setDirty();
+        for (int i = 0; i < numSprites; i++) {
+            if (sprites[i] == sprite) {
+                // Shift elements to remove the sprite
+                for (int j = i; j < numSprites - 1; j++) {
+                    sprites[j] = sprites[j + 1];
+                    if (sprites[j] != null) {
+                        sprites[j].setDirty();
+                    }
                 }
+                // Set the last element to null
+                sprites[numSprites - 1] = null;
                 numSprites--;
                 return true;
             }
@@ -211,22 +238,22 @@ public class RenderBatch implements Comparable<RenderBatch> {
         }
 
         // Add vertices with the appropriate properties
-        float xAdd = 1.0f;
-        float yAdd = 1.0f;
+        float xAdd = 0.5f;
+        float yAdd = 0.5f;
         for (int i = 0; i < 4; i++) {
             if (i == 1) {
-                yAdd = 0.0f;
+                yAdd = -0.5f;
             } else if (i == 2) {
-                xAdd = 0.0f;
+                xAdd = -0.5f;
             } else if (i == 3) {
-                yAdd = 1.0f;
+                yAdd = 0.5f;
             }
 
             Vector4f currentPos = new Vector4f(sprite.gameObject.transform.position.x + (xAdd * sprite.gameObject.transform.scale.x)
                     , sprite.gameObject.transform.position.y + (yAdd * sprite.gameObject.transform.scale.y),
                     0, 1);
-            if(isRotated){
-                currentPos = new Vector4f(xAdd, yAdd, 0, 1 ).mul(transformMatrix);
+            if (isRotated) {
+                currentPos = new Vector4f(xAdd, yAdd, 0, 1).mul(transformMatrix);
             }
 
 
@@ -248,7 +275,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
             // Load entity id
 
-            vertices[offset + 9] = sprite.gameObject.getuId() + 1;
+            vertices[offset + 9] = sprite.gameObject.getUId() + 1;
 
             offset += VERTEX_SIZE;
         }

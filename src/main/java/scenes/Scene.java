@@ -77,7 +77,7 @@ public class Scene {
 
     public GameObject getGameObject(int gameObjectId) {
         Optional<GameObject> result = this.gameObjects.stream()
-                .filter(gameObject -> gameObject.getuId() == gameObjectId)
+                .filter(gameObject -> gameObject.getUId() == gameObjectId)
                 .findFirst();
         return result.orElse(null);
     }
@@ -187,8 +187,8 @@ public class Scene {
                     }
                 }
 
-                if (objs[i].getuId() > maxGoId) {
-                    maxGoId = objs[i].getuId();
+                if (objs[i].getUId() > maxGoId) {
+                    maxGoId = objs[i].getUId();
                 }
             }
             maxGoId++;

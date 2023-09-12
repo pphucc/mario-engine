@@ -2,6 +2,7 @@ package components;
 
 import editor.JImGui;
 import imgui.ImGui;
+import imgui.type.ImInt;
 import jade.GameObject;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -24,7 +25,8 @@ public abstract class Component {
     public void update(float dt) {
 
     }
-    public void editorUpdate(float dt){
+
+    public void editorUpdate(float dt) {
 
     }
 
@@ -49,18 +51,12 @@ public abstract class Component {
                     int val = (int) value;
                     field.set(this, JImGui.dragInt(name, val));
 
-//                    int[] imInt = {val};
-//                    if (ImGui.dragInt(name + ": ", imInt)) {
-//                        field.set(this, imInt[0]);
-//                    }
+
                 } else if (type == float.class) {
                     float val = (float) value;
                     field.set(this, JImGui.dragFloat(name, val));
 
-//                    float[] imFloat = {val};
-//                    if (ImGui.dragFloat(name + ": ", imFloat)) {
-//                        field.set(this, imFloat[0]);
-//                    }
+
                 } else if (type == boolean.class) {
                     boolean val = (boolean) value;
                     boolean[] imBool = {val};
@@ -83,6 +79,12 @@ public abstract class Component {
                     if (ImGui.dragFloat4(name + ": ", imVec)) {
                         val.set(imVec[0], imVec[1], imVec[2], imVec[3]);
                     }
+                } else if (type.isEnum()) {
+                    String[] enumvals = getEnumValues(type);
+                    String enumType = ((Enum) value).name();
+                    ImInt index = new ImInt(indexOf(enumType, enumvals));
+                    if (ImGui.combo(field.getName(), index, enumvals, enumvals.length))
+                        field.set(this, type.getEnumConstants()[index.get()]);
                 }
 
                 if (isPrivate) {
@@ -100,7 +102,26 @@ public abstract class Component {
         }
     }
 
-    public void destroy(){
+    private <T extends Enum<T>> String[] getEnumValues(Class<T> enumType) {
+        String[] enumVals = new String[enumType.getEnumConstants().length];
+        int i = 0;
+        for (T enumIntValue : enumType.getEnumConstants()) {
+            enumVals[i] = enumIntValue.name();
+            i++;
+        }
+        return enumVals;
+    }
+
+    private int indexOf(String str, String[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            if (str.equals(arr[i])) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void destroy() {
 
     }
 

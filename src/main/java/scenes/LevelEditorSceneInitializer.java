@@ -92,7 +92,7 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
                     texCoords[2].x, texCoords[0].y,
                     texCoords[0].x, texCoords[2].y)) {
                 // pick up that sprite
-                GameObject object = Prefabs.generateSpriteObject(sprite, 32, 32);
+                GameObject object = Prefabs.generateSpriteObject(sprite, 0.25f, 0.25f);
                 // Attach this to the mouse cursor
                 levelEditorStuff.getComponent(MouseControls.class).pickupObject(object);
             }
