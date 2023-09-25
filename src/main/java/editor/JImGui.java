@@ -3,6 +3,7 @@ package editor;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiStyleVar;
+import imgui.type.ImString;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -123,7 +124,7 @@ public class JImGui {
         ImGui.nextColumn();
 
         float[] imColor = {color.x, color.y, color.z, color.w};
-        if(ImGui.colorEdit4("##colorPicker", imColor)){
+        if (ImGui.colorEdit4("##colorPicker", imColor)) {
             color.set(imColor[0], imColor[1], imColor[2], imColor[3]);
             res = true;
         }
@@ -131,5 +132,27 @@ public class JImGui {
         ImGui.popID();
 
         return res;
+    }
+
+    public static String inputText(String label, String text) {
+        ImGui.pushID(label);
+
+        ImGui.columns(2);
+        ImGui.setColumnWidth(0, defaultColumnWidth);
+        ImGui.text(label);
+        ImGui.nextColumn();
+
+        ImString outString = new ImString(text, 256);
+        if(ImGui.inputText("##" + label, outString)){
+            ImGui.columns(1);
+            ImGui.popID();
+
+            return outString.get();
+        }
+
+        ImGui.columns(1);
+        ImGui.popID();
+
+        return text;
     }
 }

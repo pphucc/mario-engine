@@ -55,6 +55,7 @@ public class SceneHierarchyWindow {
                 if(payloadObj.getClass().isAssignableFrom(GameObject.class)){
 
                     GameObject playerGameObj = (GameObject) payloadObj;
+
                     //Add code here for the hierarchy logic(parent, children, etc...)
                     System.out.println("Payload accepted '" + playerGameObj.name +"'");
                 }

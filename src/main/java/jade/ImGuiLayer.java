@@ -4,10 +4,7 @@ import editor.GameViewWindow;
 import editor.MenuBar;
 import editor.PropertiesWindow;
 import editor.SceneHierarchyWindow;
-import imgui.ImFontAtlas;
-import imgui.ImFontConfig;
-import imgui.ImGui;
-import imgui.ImGuiIO;
+import imgui.*;
 import imgui.callback.ImStrConsumer;
 import imgui.callback.ImStrSupplier;
 import imgui.flag.*;
@@ -21,6 +18,9 @@ import scenes.Scene;
 import java.io.File;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 public class ImGuiLayer {
 
@@ -52,9 +52,11 @@ public class ImGuiLayer {
         final ImGuiIO io = ImGui.getIO();
 
         io.setIniFilename("imgui.ini");
-        io.setConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
-        io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
-        io.setBackendFlags(ImGuiBackendFlags.HasMouseCursors);
+//        io.setConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
+        io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
+        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+
+//        io.setBackendFlags(ImGuiBackendFlags.HasMouseCursors);
         io.setBackendPlatformName("imgui_java_impl_glfw");
 
 
@@ -175,7 +177,7 @@ public class ImGuiLayer {
 
         setupDockspace();
         currentScene.imgui();
-        ImGui.showDemoWindow();
+//        ImGui.showDemoWindow();
         gameViewWindow.imgui();
         propertiesWindow.update(dt, currentScene);
         propertiesWindow.imgui();
@@ -190,8 +192,18 @@ public class ImGuiLayer {
     }
 
     public void endFrame() {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0,0, Window.getWidth(), Window.getHeight());
+        glClearColor(0,0,0,1);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         ImGui.render();
         imGuiGl3.renderDrawData(ImGui.getDrawData());
+
+        long backupWindowPtr = glfwGetCurrentContext();
+        ImGui.updatePlatformWindows();
+        ImGui.renderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backupWindowPtr);
     }
 
     public void destroyImGui() {
@@ -203,7 +215,12 @@ public class ImGuiLayer {
         int windowFlags = ImGuiWindowFlags.MenuBar
                 | ImGuiWindowFlags.NoDocking;
 
-        ImGui.setNextWindowPos(0.0f, 0.0f, ImGuiCond.Always);
+        ImGuiViewport mainViewport = ImGui.getMainViewport();
+        ImGui.setNextWindowPos(mainViewport.getWorkPosX(), mainViewport.getWorkPosY());
+        ImGui.setNextWindowSize(mainViewport.getWorkSizeX(), mainViewport.getWorkSizeY());
+        ImGui.setNextWindowViewport(mainViewport.getID());
+
+        ImGui.setNextWindowPos(0.0f, 0.0f);
         ImGui.setNextWindowSize(Window.getWidth(), Window.getHeight());
         ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
         ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
