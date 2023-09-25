@@ -51,11 +51,12 @@ public class Physics2D {
             CircleCollider circleCollider;
             Box2DCollider boxCollider;
 
-            if((circleCollider = go.getComponent(CircleCollider.class)) != null){   
+            if ((circleCollider = go.getComponent(CircleCollider.class)) != null) {
                 shape.setRadius(circleCollider.getRadius());
 
-            } else if((boxCollider = go.getComponent(Box2DCollider.class)) != null){
-                Vector2f halfSize = new Vector2f(boxCollider.getHalfSize().mul(1));
+            } else if ((boxCollider = go.getComponent(Box2DCollider.class)) != null) {
+
+                Vector2f halfSize = new Vector2f(boxCollider.getHalfSize());
                 Vector2f offset = boxCollider.getOffset();
                 Vector2f origin = new Vector2f(boxCollider.getOrigin());
                 shape.setAsBox(halfSize.x, halfSize.y, new Vec2(origin.x, origin.y), 0);
@@ -73,10 +74,10 @@ public class Physics2D {
         }
     }
 
-    public void destroyGameObject(GameObject go){
+    public void destroyGameObject(GameObject go) {
         Rigidbody2D rb = go.getComponent(Rigidbody2D.class);
-        if(rb != null){
-            if(rb.getRawBody() != null){
+        if (rb != null) {
+            if (rb.getRawBody() != null) {
                 world.destroyBody(rb.getRawBody());
                 rb.setRawBody(null);
             }
@@ -90,7 +91,5 @@ public class Physics2D {
             world.step(physicsTimeStep, velocityIterations, positionIterations);
 
         }
-
-
     }
 }

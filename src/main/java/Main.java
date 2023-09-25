@@ -1,3 +1,4 @@
+
 import jade.Window;
 
 public class Main{
@@ -5,4 +6,5 @@ public class Main{
         Window window = Window.get();
         window.run();
     }
+    
 }

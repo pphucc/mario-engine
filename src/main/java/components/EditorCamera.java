@@ -34,12 +34,20 @@ public class EditorCamera extends Component {
     }
 
 
+    private boolean isStay = false;
+
     @Override
     public void editorUpdate(float dt) {
 
 
-        // Make screen stay
-        if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+        if (KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
+            isStay = true;
+        }
+        if (KeyListener.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+            isStay = false;
+        }
+
+        if (isStay) {
             setDragSensitivity(0);
         } else {
             setDragSensitivity(10.0f);
