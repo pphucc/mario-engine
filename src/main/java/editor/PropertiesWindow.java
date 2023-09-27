@@ -24,7 +24,7 @@ public class PropertiesWindow {
 
     public void update(float dt, Scene currentScene) {
         debounce -= dt;
-        if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) && debounce < 0.0f) {
+        if (!MouseListener.isDragging() && MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) && debounce < 0.0f) {
             int x = (int) MouseListener.getScreenX();
             int y = (int) MouseListener.getScreenY();
             int gameObjectId = pickingTexture.readPixel(x, y);
@@ -53,14 +53,14 @@ public class PropertiesWindow {
 
                 if (ImGui.menuItem("Add Box Collider")) {
                     if (activeGameobject.getComponent(Box2DCollider.class) == null &&
-                        activeGameobject.getComponent(CircleCollider.class) == null) {
+                            activeGameobject.getComponent(CircleCollider.class) == null) {
                         activeGameobject.addComponent(new Box2DCollider());
                     }
                 }
 
                 if (ImGui.menuItem("Add Circle Collider")) {
                     if (activeGameobject.getComponent(CircleCollider.class) == null &&
-                        activeGameobject.getComponent(Box2DCollider.class) == null) {
+                            activeGameobject.getComponent(Box2DCollider.class) == null) {
                         activeGameobject.addComponent(new CircleCollider());
                     }
                 }
@@ -78,7 +78,7 @@ public class PropertiesWindow {
         return this.activeGameobject;
     }
 
-    public void setActiveGameObject(GameObject go){
+    public void setActiveGameObject(GameObject go) {
         this.activeGameobject = go;
     }
 }
