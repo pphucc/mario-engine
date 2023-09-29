@@ -10,15 +10,21 @@ import physics2d.components.Rigidbody2D;
 import renderer.PickingTexture;
 import scenes.Scene;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 
 public class PropertiesWindow {
+    private List<GameObject> activeGameObjects;
+
     private GameObject activeGameobject = null, currentActive = null;
     private PickingTexture pickingTexture;
 
     private float debounce = 0.5f;
 
     public PropertiesWindow(PickingTexture pickingTexture) {
+        this.activeGameObjects = new ArrayList<>();
         this.pickingTexture = pickingTexture;
     }
 
@@ -31,7 +37,8 @@ public class PropertiesWindow {
 
             GameObject pickedObj = currentScene.getGameObject(gameObjectId);
             if (pickedObj != null && pickedObj.getComponent(NonPickable.class) == null) {
-                activeGameobject = pickedObj;
+//                activeGameobject = pickedObj;
+                setActiveGameObject(pickedObj);
             } else if (pickedObj == null && !MouseListener.isDragging()) {
                 activeGameobject = null;
             }
@@ -41,7 +48,8 @@ public class PropertiesWindow {
     }
 
     public void imgui() {
-        if (activeGameobject != null) {
+        if (activeGameObjects.size() == 1 && activeGameObjects.get(0) != null) {
+            activeGameobject = activeGameObjects.get(0);
             ImGui.begin("Properties");
 
             if (ImGui.beginPopupContextWindow("ComponentAdder")) {
@@ -75,10 +83,25 @@ public class PropertiesWindow {
     }
 
     public GameObject getActiveGameobject() {
-        return this.activeGameobject;
+        return activeGameObjects.size() == 1 ? this.activeGameObjects.get(0) : null;
+    }
+
+    public List<GameObject> getActiveGameObjects() {
+        return this.activeGameObjects;
+    }
+
+    public void clearSelected() {
+        this.activeGameObjects.clear();
     }
 
     public void setActiveGameObject(GameObject go) {
-        this.activeGameobject = go;
+        if (go != null) {
+            clearSelected();
+            this.activeGameObjects.add(go);
+        }
+    }
+
+    public void addActiveGameObject(GameObject go) {
+        this.activeGameObjects.add(go);
     }
 }

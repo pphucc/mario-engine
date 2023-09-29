@@ -4,6 +4,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
+import java.util.Arrays;
+
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
@@ -26,6 +28,8 @@ public class MouseListener {
         this.xPos = 0.0;
         this.yPos = 0.0;
     }
+
+
 
     public static MouseListener get() {
         if (MouseListener.instance == null) {
@@ -72,6 +76,18 @@ public class MouseListener {
         get().scrollY = 0;
         get().lastWorldX = get().worldX;
         get().lastWorldY = get().worldY;
+    }
+
+    public static void clear(){
+        get().scrollX = 0.0;
+        get().scrollY = 0.0;
+        get().xPos = 0.0;
+        get().yPos = 0.0;
+        get().lastWorldX = 0.0;
+        get().lastWorldY = 0.0;
+        get().mouseButtonDown  = 0;
+        get().isDragging = false;
+        Arrays.fill(get().mouseButtonPressed, false);
     }
 
     public static float getX() {
