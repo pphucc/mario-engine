@@ -11,6 +11,7 @@ import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
+import physics2d.Physics2D;
 import renderer.*;
 import scenes.LevelEditorSceneInitializer;
 import scenes.Scene;
@@ -71,8 +72,12 @@ public class Window implements Observer {
         return Window.window;
     }
 
+    public static Physics2D getPhysics(){
+        return currentScene.getPhysics();
+    }
+
     public static Scene getScene() {
-        return get().currentScene;
+        return currentScene;
     }
 
     public void run() {
@@ -197,7 +202,6 @@ public class Window implements Observer {
             glClear(GL_COLOR_BUFFER_BIT);
 
             if (dt >= 0) {
-                DebugDraw.draw();
                 Renderer.bindShader(defaultShader);
                 if(runtimePlaying) {
                     currentScene.update(dt);
@@ -206,12 +210,15 @@ public class Window implements Observer {
                 }
 
                 currentScene.render();
+                DebugDraw.draw();
             }
             this.framebuffer.unbind();
             this.imGuiLayer.update(dt, currentScene);
-            glfwSwapBuffers(glfwWindow);
 
+
+            KeyListener.endFrame();
             MouseListener.endFrame();
+            glfwSwapBuffers(glfwWindow);
 
             endTime = (float) glfwGetTime();
             dt = endTime - beginTime;
