@@ -1,12 +1,22 @@
 package physics2d.components;
 
+import components.Component;
 import org.joml.Vector2f;
 import renderer.DebugDraw;
 
-public class Box2DCollider extends Collider {
+public class Box2DCollider extends Component {
     private Vector2f halfSize = new Vector2f();
     private Vector2f origin = new Vector2f();
 
+    protected Vector2f offset = new Vector2f();
+
+    public Vector2f getOffset() {
+        return this.offset;
+    }
+
+    public void setOffset(Vector2f offset) {
+        this.offset.set(offset);
+    }
 
     public Vector2f getHalfSize() {
         return halfSize;
@@ -16,16 +26,18 @@ public class Box2DCollider extends Collider {
         this.halfSize = halfSize;
     }
 
-    public Vector2f getOrigin(){
+    public Vector2f getOrigin() {
         return this.origin;
     }
 
-    public void editorUpdate(float dt){
+    public void editorUpdate(float dt) {
         Vector2f center = new Vector2f(this.gameObject.transform.position).add(this.offset);
         DebugDraw.addBox2D(center, this.halfSize, this.gameObject.transform.rotation);
-        if(this.gameObject != null){
+        if (this.gameObject != null) {
             Vector2f objSize = new Vector2f(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y);
             halfSize = new Vector2f(objSize.mul(0.5f));
         }
     }
+
+
 }
